@@ -483,15 +483,7 @@ const MonitoringForm = ({ onDataUpdate }) => {
         }
       `}</style>
 
-      <div className="futuristic-bg">
-        <div className="animated-particles">
-          <div className="particle"></div>
-          <div className="particle"></div>
-          <div className="particle"></div>
-          <div className="particle"></div>
-          <div className="particle"></div>
-          <div className="particle"></div>
-        </div>
+
 
         <div className="container" style={{ position: 'relative', zIndex: 10 }}>
           <div className="row">
@@ -666,7 +658,6 @@ const MonitoringForm = ({ onDataUpdate }) => {
             </div>
           </div>
         </div>
-      </div>
     </>
   )
 }

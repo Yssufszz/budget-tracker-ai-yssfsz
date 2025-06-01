@@ -482,15 +482,6 @@ const BudgetAllocation = () => {
         }
       `}</style>
 
-      <div className="futuristic-bg">
-        <div className="animated-particles">
-          <div className="particle"></div>
-          <div className="particle"></div>
-          <div className="particle"></div>
-          <div className="particle"></div>
-          <div className="particle"></div>
-          <div className="particle"></div>
-        </div>
 
         <div className="container" style={{ position: 'relative', zIndex: 10 }}>
           <h1 className="main-title">Budget Allocation</h1>
@@ -604,7 +595,6 @@ const BudgetAllocation = () => {
             </div>
           </div>
         </div>
-      </div>
     </>
   )
 }

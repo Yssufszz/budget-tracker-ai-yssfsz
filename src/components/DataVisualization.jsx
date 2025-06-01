@@ -484,15 +484,7 @@ const DataVisualization = () => {
         }
       `}</style>
 
-      <div className="futuristic-dashboard">
-        <div className="animated-particles">
-          <div className="particle"></div>
-          <div className="particle"></div>
-          <div className="particle"></div>
-          <div className="particle"></div>
-          <div className="particle"></div>
-          <div className="particle"></div>
-        </div>
+
 
         <div className="dashboard-content">
           <div className="row">
@@ -625,7 +617,6 @@ const DataVisualization = () => {
             </div>
           </div>
         </div>
-      </div>
     </>
   )
 }

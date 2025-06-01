@@ -502,15 +502,7 @@ const SavingsGoals = () => {
         }
       `}</style>
 
-      <div className="futuristic-bg">
-        <div className="animated-particles">
-          <div className="particle"></div>
-          <div className="particle"></div>
-          <div className="particle"></div>
-          <div className="particle"></div>
-          <div className="particle"></div>
-          <div className="particle"></div>
-        </div>
+
 
         <div className="container content-wrapper">
           <div className="row">
@@ -642,7 +634,6 @@ const SavingsGoals = () => {
             </div>
           </div>
         </div>
-      </div>
     </>
   )
 }
