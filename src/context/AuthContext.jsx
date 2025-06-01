@@ -39,10 +39,15 @@ export const AuthProvider = ({ children }) => {
   }
 
   const signInWithGoogle = async () => {
+    const isProduction = window.location.hostname !== 'localhost'
+    const redirectTo = isProduction 
+      ? 'https://budget-tracker-ai-yssfsz.pages.dev'
+      : 'http://localhost:3000'
+
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.origin
+        redirectTo: redirectTo
       }
     })
     return { error }
