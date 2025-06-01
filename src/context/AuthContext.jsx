@@ -23,19 +23,63 @@ export const AuthProvider = ({ children }) => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       setUser(session?.user ?? null)
       setLoading(false)
+
+      // Handle user creation in custom table when they sign up
+      if (event === 'SIGNED_UP' && session?.user) {
+        await createUserProfile(session.user)
+      }
     })
 
     return () => subscription?.unsubscribe()
   }, [])
+
+  // Function to create user profile in custom table
+  const createUserProfile = async (user) => {
+    try {
+      const { error } = await supabase
+        .from('users_budgettrack')
+        .insert([
+          {
+            id: user.id, // Use the same ID from auth.users
+            email: user.email,
+            name: user.user_metadata?.name || user.user_metadata?.full_name || null,
+          }
+        ])
+        .select()
+
+      if (error) {
+        console.error('Error creating user profile:', error)
+      }
+    } catch (error) {
+      console.error('Error in createUserProfile:', error)
+    }
+  }
 
   const signInWithEmail = async (email, password) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     return { error }
   }
 
-  const signUpWithEmail = async (email, password) => {
-    const { error } = await supabase.auth.signUp({ email, password })
-    return { error }
+  const signUpWithEmail = async (email, password, name = null) => {
+    const { data, error } = await supabase.auth.signUp({ 
+      email, 
+      password,
+      options: {
+        data: {
+          name: name
+        }
+      }
+    })
+
+    // If signup is successful and user is immediately confirmed, create profile
+    if (!error && data?.user && !data?.user?.email_confirmed_at) {
+      // For cases where email confirmation is disabled
+      if (data.session) {
+        await createUserProfile(data.user)
+      }
+    }
+
+    return { data, error }
   }
 
   const signInWithGoogle = async () => {
@@ -44,13 +88,14 @@ export const AuthProvider = ({ children }) => {
       ? 'https://budget-tracker-ai-yssfsz.pages.dev'
       : 'http://localhost:3000'
 
-    const { error } = await supabase.auth.signInWithOAuth({
+    const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: redirectTo
       }
     })
-    return { error }
+
+    return { data, error }
   }
 
   const signOut = async () => {
@@ -63,7 +108,8 @@ export const AuthProvider = ({ children }) => {
     signInWithEmail,
     signUpWithEmail,
     signInWithGoogle,
-    signOut
+    signOut,
+    createUserProfile // Export this in case you need it elsewhere
   }
 
   return (

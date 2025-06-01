@@ -5,6 +5,7 @@ const Auth = () => {
   const [isLogin, setIsLogin] = useState(true)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [name, setName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -17,10 +18,14 @@ const Auth = () => {
 
     const { error } = isLogin 
       ? await signInWithEmail(email, password)
-      : await signUpWithEmail(email, password)
+      : await signUpWithEmail(email, password, name)
 
     if (error) {
       setError(error.message)
+    } else if (!isLogin) {
+      // Show success message for signup
+      setError('')
+      // Optionally show success message or reset form
     }
     setLoading(false)
   }
@@ -337,6 +342,18 @@ const Auth = () => {
                 )}
 
                 <form onSubmit={handleSubmit}>
+                  {!isLogin && (
+                    <div className="mb-4">
+                      <input
+                        type="text"
+                        className="form-control form-control-lg futuristic-input"
+                        placeholder="Masukkan nama lengkap Anda"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                      />
+                    </div>
+                  )}
                   <div className="mb-4">
                     <input
                       type="email"
