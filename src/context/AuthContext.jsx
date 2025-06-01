@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }) => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.origin
+        redirectTo: 'https://budget-tracker-ai-yssfsz.pages.dev/dashboard'
       }
     })
     return { error }
