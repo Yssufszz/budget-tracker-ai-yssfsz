@@ -33,14 +33,13 @@ export const AuthProvider = ({ children }) => {
     return () => subscription?.unsubscribe()
   }, [])
 
-  // Function to create user profile in custom table
   const createUserProfile = async (user) => {
     try {
       const { error } = await supabase
         .from('users_budgettrack')
         .insert([
           {
-            id: user.id, // Use the same ID from auth.users
+            id: user.id,
             email: user.email,
             name: user.user_metadata?.name || user.user_metadata?.full_name || null,
           }
@@ -71,9 +70,7 @@ export const AuthProvider = ({ children }) => {
       }
     })
 
-    // If signup is successful and user is immediately confirmed, create profile
     if (!error && data?.user && !data?.user?.email_confirmed_at) {
-      // For cases where email confirmation is disabled
       if (data.session) {
         await createUserProfile(data.user)
       }
@@ -109,7 +106,7 @@ export const AuthProvider = ({ children }) => {
     signUpWithEmail,
     signInWithGoogle,
     signOut,
-    createUserProfile // Export this in case you need it elsewhere
+    createUserProfile
   }
 
   return (
