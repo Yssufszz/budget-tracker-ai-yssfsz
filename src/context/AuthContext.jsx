@@ -21,17 +21,10 @@ export const AuthProvider = ({ children }) => {
     getSession()
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event, session?.user?.email) // Debug log
       setUser(session?.user ?? null)
       setLoading(false)
 
-      // Handle user creation in custom table when they sign in for the first time
-      if (event === 'SIGNED_IN' && session?.user) {
-        // Check if user profile exists, if not create it
-        await ensureUserProfile(session.user)
-      }
-      
-      // Backup: Also handle SIGNED_UP if it fires
+      // Handle user creation in custom table when they sign up
       if (event === 'SIGNED_UP' && session?.user) {
         await createUserProfile(session.user)
       }
@@ -40,34 +33,10 @@ export const AuthProvider = ({ children }) => {
     return () => subscription?.unsubscribe()
   }, [])
 
-  // Function to ensure user profile exists (check first, create if not exists)
-  const ensureUserProfile = async (user) => {
-    try {
-      // Check if profile already exists
-      const { data: existingProfile, error: fetchError } = await supabase
-        .from('users_budgettrack')
-        .select('id')
-        .eq('id', user.id)
-        .single()
-
-      if (fetchError && fetchError.code === 'PGRST116') {
-        // Profile doesn't exist, create it
-        console.log('Creating user profile for:', user.email)
-        await createUserProfile(user)
-      } else if (existingProfile) {
-        console.log('User profile already exists for:', user.email)
-      }
-    } catch (error) {
-      console.error('Error in ensureUserProfile:', error)
-    }
-  }
-
   // Function to create user profile in custom table
   const createUserProfile = async (user) => {
     try {
-      console.log('Attempting to create profile for:', user.email, user.user_metadata)
-      
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('users_budgettrack')
         .insert([
           {
@@ -80,8 +49,6 @@ export const AuthProvider = ({ children }) => {
 
       if (error) {
         console.error('Error creating user profile:', error)
-      } else {
-        console.log('User profile created successfully:', data)
       }
     } catch (error) {
       console.error('Error in createUserProfile:', error)
@@ -104,10 +71,12 @@ export const AuthProvider = ({ children }) => {
       }
     })
 
-    // Create user profile immediately after successful signup
-    if (!error && data?.user) {
-      // Always try to create profile, regardless of email confirmation status
-      await createUserProfile(data.user)
+    // If signup is successful and user is immediately confirmed, create profile
+    if (!error && data?.user && !data?.user?.email_confirmed_at) {
+      // For cases where email confirmation is disabled
+      if (data.session) {
+        await createUserProfile(data.user)
+      }
     }
 
     return { data, error }
@@ -140,8 +109,7 @@ export const AuthProvider = ({ children }) => {
     signUpWithEmail,
     signInWithGoogle,
     signOut,
-    createUserProfile, // Export this in case you need it elsewhere
-    ensureUserProfile // Export this too
+    createUserProfile // Export this in case you need it elsewhere
   }
 
   return (
