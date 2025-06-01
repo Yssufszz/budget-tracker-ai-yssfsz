@@ -332,7 +332,7 @@ const Auth = () => {
               <div className="card-body p-5">
                 <div className="text-center mb-5">
                   <h2 className="futuristic-title mb-3">AI Budget Tracker</h2>
-                  <p className="futuristic-subtitle">Kelola keuangan dengan rekomendasi dari AI anda sendiri</p>
+                  <p className="futuristic-subtitle">Kelola keuangan dengan rekomendasi dari asisten keuangan AI anda sendiri.</p>
                 </div>
 
                 {error && (
