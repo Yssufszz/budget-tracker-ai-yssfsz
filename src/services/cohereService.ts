@@ -14,7 +14,7 @@ interface FinancialData {
 export const generateFinancialSummary = async (data: FinancialData): Promise<string> => {
   try {
     const prompt = `
-    anda berperan sebagai asisten/ahlinya keuangan yang membantu pengguna mengelola keuangan mereka dengan lebih baik kasih sapaan dahulu kayak Halo atau hai.
+    anda berperan sebagai asisten keuangan pribadi yang membantu pengguna mengelola keuangan mereka dengan lebih baik kasih sapaan dahulu kayak Halo atau hai, terapkan bahasa yang santai tetapi sopan ya.
     Berdasarkan data keuangan berikut:
     - Total Income: ${data.income.reduce((sum, item) => sum + parseFloat(item.amount), 0)}
     - Total Expenses: ${data.expenses.reduce((sum, item) => sum + parseFloat(item.amount), 0)}

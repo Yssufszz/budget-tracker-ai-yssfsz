@@ -882,7 +882,7 @@ const Dashboard = () => {
                 onClick={() => setActiveTab('overview')}
               >
                 <BarChart3 size={18} />
-                Overview
+                Ringkasan
               </button>
             </li>
             <li className="nav-item">
