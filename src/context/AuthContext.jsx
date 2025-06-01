@@ -11,61 +11,17 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
 
-  // Fungsi untuk membuat atau update user di users_budgettrack
-  const createOrUpdateUserRecord = async (user) => {
-    if (!user) return
-
-    try {
-      const { data, error } = await supabase
-        .from('users_budgettrack')
-        .upsert(
-          {
-            id: user.id,
-            email: user.email,
-            name: user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0],
-            avatar_url: user.user_metadata?.avatar_url || user.user_metadata?.picture
-          },
-          { 
-            onConflict: 'email',
-            ignoreDuplicates: false 
-          }
-        )
-        .select()
-
-      if (error) {
-        console.error('Error creating/updating user record:', error)
-      } else {
-        console.log('User record created/updated successfully:', data)
-      }
-    } catch (err) {
-      console.error('Unexpected error:', err)
-    }
-  }
-
   useEffect(() => {
     const getSession = async () => {
       const { data: { session } } = await supabase.auth.getSession()
-      if (session?.user) {
-        setUser(session.user)
-        // Buat atau update record user ketika session ditemukan
-        await createOrUpdateUserRecord(session.user)
-      }
+      setUser(session?.user ?? null)
       setLoading(false)
     }
 
     getSession()
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (session?.user) {
-        setUser(session.user)
-        
-        // Buat atau update record user ketika ada perubahan auth state
-        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-          await createOrUpdateUserRecord(session.user)
-        }
-      } else {
-        setUser(null)
-      }
+      setUser(session?.user ?? null)
       setLoading(false)
     })
 
