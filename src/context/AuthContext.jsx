@@ -9,19 +9,12 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null)
-  const [userProfile, setUserProfile] = useState(null) // Tambah state untuk profile
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const getSession = async () => {
       const { data: { session } } = await supabase.auth.getSession()
       setUser(session?.user ?? null)
-      
-      // Ambil profile user jika ada session
-      if (session?.user) {
-        await getUserProfile(session.user.id)
-      }
-      
       setLoading(false)
     }
 
@@ -29,13 +22,6 @@ export const AuthProvider = ({ children }) => {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       setUser(session?.user ?? null)
-      
-      if (session?.user) {
-        await getUserProfile(session.user.id)
-      } else {
-        setUserProfile(null) // Clear profile saat logout
-      }
-      
       setLoading(false)
 
       // Handle user creation in custom table when they sign up
@@ -47,29 +33,9 @@ export const AuthProvider = ({ children }) => {
     return () => subscription?.unsubscribe()
   }, [])
 
-  // Fungsi untuk mengambil profile user dari database
-  const getUserProfile = async (userId) => {
-    try {
-      const { data, error } = await supabase
-        .from('users_budgettrack')
-        .select('*')
-        .eq('id', userId)
-        .single()
-
-      if (error) {
-        console.error('Error fetching user profile:', error)
-        return
-      }
-
-      setUserProfile(data)
-    } catch (error) {
-      console.error('Error in getUserProfile:', error)
-    }
-  }
-
   const createUserProfile = async (user) => {
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('users_budgettrack')
         .insert([
           {
@@ -79,15 +45,10 @@ export const AuthProvider = ({ children }) => {
           }
         ])
         .select()
-        .single()
 
       if (error) {
         console.error('Error creating user profile:', error)
-        return
       }
-
-      // Set profile setelah berhasil dibuat
-      setUserProfile(data)
     } catch (error) {
       console.error('Error in createUserProfile:', error)
     }
@@ -141,13 +102,11 @@ export const AuthProvider = ({ children }) => {
 
   const value = {
     user,
-    userProfile, // Expose userProfile
     signInWithEmail,
     signUpWithEmail,
     signInWithGoogle,
     signOut,
-    createUserProfile,
-    getUserProfile
+    createUserProfile
   }
 
   return (

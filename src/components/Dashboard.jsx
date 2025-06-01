@@ -25,7 +25,7 @@ import {
 } from 'lucide-react'
 
 const Dashboard = () => {
-  const { user, userProfile, signOut } = useAuth()
+  const { user, signOut } = useAuth()
   const [activeTab, setActiveTab] = useState('overview')
   const [financialData, setFinancialData] = useState({
     income: [],
@@ -863,7 +863,7 @@ const Dashboard = () => {
             <div className="navbar-nav ms-auto">
               <span className="navbar-text text-white me-3 d-flex align-items-center">
                 <User className="me-2" size={16} />
-                Halo, {userProfile?.name || user?.email || 'User'}!
+                Halo, {user?.email}
               </span>
               <button className="btn futuristic-logout-btn d-flex align-items-center" onClick={handleSignOut}>
                 <LogOut className="me-2" size={16} />
